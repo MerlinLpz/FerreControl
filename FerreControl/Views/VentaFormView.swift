@@ -1,12 +1,10 @@
-// Formulario para registrar la salida de stock por una venta
+// Formulario para registrar la salida de stock — botón de confirmación terracota
 import SwiftUI
 import CoreData
 
 struct VentaFormView: View {
 
-    @Environment(\.managedObjectContext) private var context
     @Environment(\.dismiss) private var dismiss
-
     @ObservedObject var producto: Producto
     @StateObject private var viewModel: VentaViewModel
 
@@ -14,8 +12,6 @@ struct VentaFormView: View {
 
     init(producto: Producto) {
         self.producto = producto
-        // Se inicializa después de que @Environment esté disponible,
-        // por eso usamos un placeholder temporal que se reasigna en onAppear
         _viewModel = StateObject(wrappedValue: VentaViewModel(context: producto.managedObjectContext!))
     }
 
@@ -26,38 +22,49 @@ struct VentaFormView: View {
                     LabeledContent("Nombre", value: producto.nombreCompleto)
                     LabeledContent("Stock disponible") {
                         Text("\(producto.stock) \(producto.unidad ?? "unidades")")
-                            .foregroundStyle(producto.stockBajo ? .orange : .primary)
+                            .foregroundStyle(producto.stockBajo ? Color.fcWarning : Color.fcFg2)
                     }
                     LabeledContent("Precio unitario", value: producto.precio.enSoles)
                 }
+                .listRowBackground(Color.fcBgCard)
+                .listRowSeparatorTint(Color.fcSeparator)
 
                 Section("Venta") {
                     Stepper("Cantidad: \(cantidad)", value: $cantidad, in: 1...Int(max(producto.stock, 1)))
+                        .foregroundStyle(Color.fcFg)
                     LabeledContent("Total") {
                         Text((producto.precio * Double(cantidad)).enSoles)
                             .bold()
+                            .foregroundStyle(Color.fcBrand)
                     }
                 }
+                .listRowBackground(Color.fcBgInput)
+                .listRowSeparatorTint(Color.fcSeparator)
 
                 Section {
                     Button(action: confirmarVenta) {
                         HStack {
                             Spacer()
                             Label("Confirmar venta", systemImage: "checkmark.circle.fill")
-                                .bold()
+                                .font(.headline)
+                                .foregroundStyle(.white)
                             Spacer()
                         }
+                        .padding(.vertical, FCSpace.s1)
                     }
-                    .foregroundStyle(.white)
-                    .listRowBackground(Color.blue)
                     .disabled(producto.stock == 0)
+                    .listRowBackground(producto.stock > 0 ? Color.fcBrand : Color.fcFg3)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.fcBgApp)
             .navigationTitle("Registrar Venta")
             .navigationBarTitleDisplayMode(.inline)
+            .tint(Color.fcBrand)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancelar") { dismiss() }
+                        .foregroundStyle(Color.fcFg2)
                 }
             }
             .alert("Error", isPresented: Binding(
@@ -69,12 +76,11 @@ struct VentaFormView: View {
                 Text(viewModel.errorMessage ?? "")
             }
         }
+        .presentationCornerRadius(FCRadius.sheet)
     }
 
     private func confirmarVenta() {
         viewModel.registrarVenta(producto: producto, cantidad: Int32(cantidad))
-        if viewModel.errorMessage == nil {
-            dismiss()
-        }
+        if viewModel.errorMessage == nil { dismiss() }
     }
 }

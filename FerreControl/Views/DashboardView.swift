@@ -10,7 +10,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: FCSpace.s6) {
                     encabezado
                     seccionEstadisticas
                     if viewModel.productoMasVendido != nil {
@@ -18,23 +18,26 @@ struct DashboardView: View {
                     }
                     seccionVentasRecientes
                 }
-                .padding()
+                .padding(FCSpace.s4)
             }
             .navigationTitle("Resumen")
             .navigationBarTitleDisplayMode(.large)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.fcBgApp)
+            .toolbarBackground(Color.fcBgApp, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 
     // MARK: - Encabezado
 
     private var encabezado: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: FCSpace.s1) {
             Text(saludo)
                 .font(.title2.bold())
+                .foregroundStyle(Color.fcFg)
             Text(Date().conHora)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.fcFg3)
         }
     }
 
@@ -50,30 +53,30 @@ struct DashboardView: View {
     // MARK: - Tarjetas de estadísticas
 
     private var seccionEstadisticas: some View {
-        LazyVGrid(columns: columnas, spacing: 16) {
+        LazyVGrid(columns: columnas, spacing: FCSpace.s4) {
             TarjetaStat(
                 titulo: "Productos",
                 valor: "\(viewModel.productos.count)",
                 icono: "archivebox.fill",
-                color: .blue
+                color: .fcBrand
             )
             TarjetaStat(
                 titulo: "Valor inventario",
                 valor: viewModel.valorTotalInventario.enSoles,
                 icono: "peruniansol",
-                color: .green
+                color: .fcSuccess
             )
             TarjetaStat(
                 titulo: "En alerta",
                 valor: "\(viewModel.productosStockBajo.count)",
                 icono: "exclamationmark.triangle.fill",
-                color: viewModel.productosStockBajo.isEmpty ? .gray : .orange
+                color: viewModel.productosStockBajo.isEmpty ? .fcFg3 : .fcWarning
             )
             TarjetaStat(
                 titulo: "Unidades vendidas",
                 valor: "\(viewModel.totalUnidadesVendidas)",
                 icono: "cart.fill",
-                color: .purple
+                color: .fcBrand2
             )
         }
     }
@@ -81,37 +84,38 @@ struct DashboardView: View {
     // MARK: - Producto estrella
 
     private var seccionProductoEstrella: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: FCSpace.s3) {
             Label("Producto más vendido", systemImage: "star.fill")
                 .font(.headline)
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.fcFg)
 
             if let top = viewModel.productoMasVendido {
                 NavigationLink(destination: ProductoDetailView(producto: top, viewModel: viewModel)) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: FCSpace.s4) {
                         ZStack {
                             Circle()
-                                .fill(Color.yellow.opacity(0.2))
+                                .fill(Color.fcWarningBg)
                                 .frame(width: 52, height: 52)
                             Image(systemName: "trophy.fill")
                                 .font(.title2)
-                                .foregroundStyle(.yellow)
+                                .foregroundStyle(Color.fcWarning)
                         }
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: FCSpace.s1) {
                             Text(top.nombreCompleto)
                                 .font(.headline)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(Color.fcFg)
                             Text("\(top.totalVendido) \((top.unidad ?? "unidades").lowercased()) vendidas")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.fcFg2)
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Color.fcFg3)
                     }
-                    .padding()
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .padding(FCSpace.s4)
+                    .background(Color.fcBgCard)
+                    .clipShape(RoundedRectangle(cornerRadius: FCRadius.card))
+                    .shadow(color: Color.fcFg.opacity(0.06), radius: 8, x: 0, y: 2)
                 }
             }
         }
@@ -120,37 +124,41 @@ struct DashboardView: View {
     // MARK: - Ventas recientes
 
     private var seccionVentasRecientes: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: FCSpace.s3) {
             Label("Últimas ventas", systemImage: "clock.arrow.circlepath")
                 .font(.headline)
+                .foregroundStyle(Color.fcFg)
 
             if viewModel.ventasRecientes.isEmpty {
                 HStack {
                     Spacer()
-                    VStack(spacing: 8) {
+                    VStack(spacing: FCSpace.s2) {
                         Image(systemName: "cart.badge.questionmark")
                             .font(.largeTitle)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.fcFg3)
                         Text("Sin ventas registradas")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.fcFg3)
                     }
-                    .padding()
+                    .padding(FCSpace.s5)
                     Spacer()
                 }
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .background(Color.fcBgCard)
+                .clipShape(RoundedRectangle(cornerRadius: FCRadius.card))
             } else {
                 VStack(spacing: 0) {
                     ForEach(Array(viewModel.ventasRecientes.enumerated()), id: \.element.objectID) { idx, venta in
                         FilaVentaReciente(venta: venta)
                         if idx < viewModel.ventasRecientes.count - 1 {
-                            Divider().padding(.leading, 56)
+                            Divider()
+                                .overlay(Color.fcSeparator)
+                                .padding(.leading, 56)
                         }
                     }
                 }
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .background(Color.fcBgCard)
+                .clipShape(RoundedRectangle(cornerRadius: FCRadius.card))
+                .shadow(color: Color.fcFg.opacity(0.06), radius: 8, x: 0, y: 2)
             }
         }
     }
@@ -165,28 +173,30 @@ private struct TarjetaStat: View {
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: FCSpace.s3) {
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: FCRadius.sm)
                     .fill(color.opacity(0.15))
                     .frame(width: 40, height: 40)
                 Image(systemName: icono)
                     .foregroundStyle(color)
             }
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: FCSpace.s1) {
                 Text(valor)
                     .font(.title2.bold())
+                    .foregroundStyle(Color.fcFg)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                 Text(titulo)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.fcFg3)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .padding(FCSpace.s4)
+        .background(Color.fcBgCard)
+        .clipShape(RoundedRectangle(cornerRadius: FCRadius.card))
+        .shadow(color: Color.fcFg.opacity(0.06), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -196,28 +206,29 @@ private struct FilaVentaReciente: View {
     let venta: Venta
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: FCSpace.s3) {
             ZStack {
                 Circle()
-                    .fill(Color.purple.opacity(0.15))
+                    .fill(Color.fcBrandSoft)
                     .frame(width: 36, height: 36)
                 Image(systemName: "minus.circle.fill")
-                    .foregroundStyle(.purple)
+                    .foregroundStyle(Color.fcBrand)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(venta.producto?.nombreCompleto ?? "Producto eliminado")
                     .font(.subheadline)
+                    .foregroundStyle(Color.fcFg)
                     .lineLimit(1)
                 Text(venta.fecha?.corta ?? "—")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.fcFg3)
             }
             Spacer()
             Text("-\(venta.cantidad) \((venta.producto?.unidad ?? "uds.").lowercased())")
                 .font(.subheadline.bold())
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.fcDanger)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 10)
+        .padding(.horizontal, FCSpace.s4)
+        .padding(.vertical, FCSpace.s3)
     }
 }

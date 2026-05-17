@@ -1,4 +1,4 @@
-// Vista dedicada a productos con stock bajo — muestra urgencia y permite acceder al detalle
+// Vista de alertas con niveles de urgencia y colores semánticos del sistema de diseño
 import SwiftUI
 
 struct AlertasView: View {
@@ -15,23 +15,35 @@ struct AlertasView: View {
         }
         .navigationTitle("Alertas de stock")
         .navigationBarTitleDisplayMode(.large)
+        .background(Color.fcBgApp)
+        .toolbarBackground(Color.fcBgApp, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     // MARK: - Estado vacío
 
     private var inventarioEnOrden: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(.green)
-            Text("Todo en orden")
-                .font(.title2.bold())
-            Text("Todos los productos tienen stock suficiente.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+        VStack(spacing: FCSpace.s5) {
+            ZStack {
+                Circle()
+                    .fill(Color.fcSuccessBg)
+                    .frame(width: 96, height: 96)
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(Color.fcSuccess)
+            }
+            VStack(spacing: FCSpace.s2) {
+                Text("Todo en orden")
+                    .font(.title2.bold())
+                    .foregroundStyle(Color.fcFg)
+                Text("Todos los productos tienen\nstock suficiente.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.fcFg3)
+                    .multilineTextAlignment(.center)
+            }
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.fcBgApp)
     }
 
     // MARK: - Lista de alertas
@@ -41,60 +53,64 @@ struct AlertasView: View {
             Section {
                 resumenCabecera
             }
+            .listRowBackground(Color.fcBrandSoft)
+            .listRowSeparator(.hidden)
 
-            let agotados  = viewModel.productosStockBajo.filter { $0.stock == 0 }
-            let criticos  = viewModel.productosStockBajo.filter { $0.stock > 0 && $0.stock <= $0.stockMinimo / 2 }
-            let bajos     = viewModel.productosStockBajo.filter { $0.stock > $0.stockMinimo / 2 }
+            let agotados = viewModel.productosStockBajo.filter { $0.stock == 0 }
+            let criticos = viewModel.productosStockBajo.filter { $0.stock > 0 && $0.stock <= $0.stockMinimo / 2 }
+            let bajos    = viewModel.productosStockBajo.filter { $0.stock > $0.stockMinimo / 2 }
 
             if !agotados.isEmpty {
                 Section {
-                    ForEach(agotados) { p in
-                        filaAlerta(p, nivel: .agotado)
-                    }
+                    ForEach(agotados) { p in filaAlerta(p, nivel: .agotado) }
                 } header: {
-                    etiquetaSeccion("Agotados", icono: "xmark.circle.fill", color: .red)
+                    etiquetaSeccion("Agotados", icono: "xmark.circle.fill", color: .fcDanger)
                 }
+                .listRowBackground(Color.fcBgCard)
+                .listRowSeparatorTint(Color.fcSeparator)
             }
 
             if !criticos.isEmpty {
                 Section {
-                    ForEach(criticos) { p in
-                        filaAlerta(p, nivel: .critico)
-                    }
+                    ForEach(criticos) { p in filaAlerta(p, nivel: .critico) }
                 } header: {
-                    etiquetaSeccion("Crítico", icono: "exclamationmark.triangle.fill", color: .orange)
+                    etiquetaSeccion("Crítico", icono: "exclamationmark.triangle.fill", color: .fcWarning)
                 }
+                .listRowBackground(Color.fcBgCard)
+                .listRowSeparatorTint(Color.fcSeparator)
             }
 
             if !bajos.isEmpty {
                 Section {
-                    ForEach(bajos) { p in
-                        filaAlerta(p, nivel: .bajo)
-                    }
+                    ForEach(bajos) { p in filaAlerta(p, nivel: .bajo) }
                 } header: {
-                    etiquetaSeccion("Stock bajo", icono: "arrow.down.circle.fill", color: .yellow)
+                    etiquetaSeccion("Stock bajo", icono: "arrow.down.circle.fill", color: .fcFg3)
                 }
+                .listRowBackground(Color.fcBgCard)
+                .listRowSeparatorTint(Color.fcSeparator)
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
     }
 
     // MARK: - Subcomponentes
 
     private var resumenCabecera: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: FCSpace.s4) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.title2)
-                .foregroundStyle(.orange)
-            VStack(alignment: .leading, spacing: 2) {
+                .foregroundStyle(Color.fcWarning)
+            VStack(alignment: .leading, spacing: FCSpace.s1) {
                 Text("\(viewModel.productosStockBajo.count) producto\(viewModel.productosStockBajo.count == 1 ? "" : "s") con stock bajo")
                     .font(.headline)
+                    .foregroundStyle(Color.fcBrandSoftFg)
                 Text("Revisa y repón el inventario")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.fcFg3)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, FCSpace.s1)
     }
 
     private func etiquetaSeccion(_ titulo: String, icono: String, color: Color) -> some View {
@@ -117,38 +133,41 @@ private struct FilaProductoAlerta: View {
     let producto: Producto
     let nivel: NivelAlerta
 
-    /// Porcentaje de stock respecto al mínimo (máximo 1.0)
     private var progreso: Double {
         guard producto.stockMinimo > 0 else { return 0 }
         return min(Double(producto.stock) / Double(producto.stockMinimo), 1.0)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: FCSpace.s2) {
             HStack {
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: FCSpace.s1) {
                     Text(producto.nombreCompleto)
                         .font(.headline)
+                        .foregroundStyle(Color.fcFg)
                     Text(producto.unidad ?? "Unidad")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.fcFg3)
                 }
                 Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
+                VStack(alignment: .trailing, spacing: FCSpace.s1) {
                     Text("\(producto.stock)")
                         .font(.title3.bold())
                         .foregroundStyle(nivel.color)
                     Text("mín. \(producto.stockMinimo)")
                         .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.fcFg3)
                 }
+                .padding(.horizontal, FCSpace.s2)
+                .padding(.vertical, FCSpace.s1)
+                .background(nivel.bgColor)
+                .clipShape(RoundedRectangle(cornerRadius: FCRadius.sm))
             }
 
-            // Barra de progreso que muestra qué tan cerca está del mínimo
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
+                        .fill(Color.fcSeparator)
                         .frame(height: 6)
                     RoundedRectangle(cornerRadius: 4)
                         .fill(nivel.color.gradient)
@@ -162,33 +181,31 @@ private struct FilaProductoAlerta: View {
                 .font(.caption)
                 .foregroundStyle(nivel.color)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, FCSpace.s2)
     }
 }
 
-// MARK: - Niveles de alerta
+// MARK: - Niveles de alerta con tokens del sistema de diseño
 
 private enum NivelAlerta {
     case agotado, critico, bajo
 
     var color: Color {
         switch self {
-        case .agotado: .red
-        case .critico: .orange
-        case .bajo:    .yellow
+        case .agotado:        .fcDanger
+        case .critico, .bajo: .fcWarning
+        }
+    }
+
+    var bgColor: Color {
+        switch self {
+        case .agotado:        .fcDangerBg
+        case .critico, .bajo: .fcWarningBg
         }
     }
 
     func descripcion(stock: Int32, minimo: Int32, unidad: String) -> String {
-        switch self {
-        case .agotado:
-            return "Sin stock — reponer urgente"
-        case .critico:
-            let faltan = minimo - stock
-            return "Faltan \(faltan) \(unidad.lowercased()) para alcanzar el mínimo"
-        case .bajo:
-            let faltan = minimo - stock
-            return "Faltan \(faltan) \(unidad.lowercased()) para alcanzar el mínimo"
-        }
+        if stock == 0 { return "Sin stock — reponer urgente" }
+        return "Faltan \(minimo - stock) \(unidad.lowercased()) para alcanzar el mínimo"
     }
 }
