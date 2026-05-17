@@ -13,7 +13,7 @@ struct AlertasView: View {
                 listaAlertas
             }
         }
-        .navigationTitle("Alertas de stock")
+        .navigationTitle("Alertas")
         .navigationBarTitleDisplayMode(.large)
         .background(Color.fcBgApp)
         .toolbarBackground(Color.fcBgApp, for: .navigationBar)

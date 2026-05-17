@@ -20,24 +20,24 @@ struct DashboardView: View {
                 }
                 .padding(FCSpace.s4)
             }
-            .navigationTitle("Resumen")
-            .navigationBarTitleDisplayMode(.large)
+            .toolbar(.hidden, for: .navigationBar)
             .background(Color.fcBgApp)
-            .toolbarBackground(Color.fcBgApp, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 
     // MARK: - Encabezado
 
     private var encabezado: some View {
-        VStack(alignment: .leading, spacing: FCSpace.s1) {
-            Text(saludo)
-                .font(.title2.bold())
-                .foregroundStyle(Color.fcFg)
-            Text(Date().conHora)
-                .font(.subheadline)
-                .foregroundStyle(Color.fcFg3)
+        HStack(spacing: FCSpace.s3) {
+            FCMark()
+            VStack(alignment: .leading, spacing: FCSpace.s1) {
+                Text(saludo)
+                    .font(.title2.bold())
+                    .foregroundStyle(Color.fcFg)
+                Text(Date().conHora)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.fcFg3)
+            }
         }
     }
 
@@ -197,6 +197,22 @@ private struct TarjetaStat: View {
         .background(Color.fcBgCard)
         .clipShape(RoundedRectangle(cornerRadius: FCRadius.card))
         .shadow(color: Color.fcFg.opacity(0.06), radius: 8, x: 0, y: 2)
+    }
+}
+
+// MARK: - Logo FCMark: cuadrado terracota con las iniciales "FC"
+
+private struct FCMark: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: FCRadius.btn)
+                .fill(Color.fcBrand)
+                .frame(width: 46, height: 46)
+            Text("FC")
+                .font(.system(size: 17, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .tracking(1)
+        }
     }
 }
 
