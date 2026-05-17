@@ -18,9 +18,7 @@ struct ContentView: View {
             }
 
             Tab("Alertas", systemImage: "exclamationmark.triangle.fill") {
-                NavigationStack {
-                    AlertasView(viewModel: viewModel)
-                }
+                AlertasView(viewModel: viewModel)
             }
             .badge(viewModel.productosStockBajo.count)
 

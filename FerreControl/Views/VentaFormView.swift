@@ -18,25 +18,41 @@ struct VentaFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Producto") {
-                    LabeledContent("Nombre", value: producto.nombreCompleto)
-                    LabeledContent("Stock disponible") {
+                Section {
+                    LabeledContent {
+                        Text(producto.nombreCompleto).foregroundStyle(Color.fcFg2)
+                    } label: {
+                        Text("Nombre").foregroundStyle(Color.fcFg2)
+                    }
+                    LabeledContent {
                         Text("\(producto.stock) \(producto.unidad ?? "unidades")")
                             .foregroundStyle(producto.stockBajo ? Color.fcWarning : Color.fcFg2)
+                    } label: {
+                        Text("Stock disponible").foregroundStyle(Color.fcFg2)
                     }
-                    LabeledContent("Precio unitario", value: producto.precio.enSoles)
+                    LabeledContent {
+                        Text(producto.precio.enSoles).foregroundStyle(Color.fcFg2)
+                    } label: {
+                        Text("Precio unitario").foregroundStyle(Color.fcFg2)
+                    }
+                } header: {
+                    Text("Producto").foregroundStyle(Color.fcFg2)
                 }
                 .listRowBackground(Color.fcBgCard)
                 .listRowSeparatorTint(Color.fcSeparator)
 
-                Section("Venta") {
+                Section {
                     Stepper("Cantidad: \(cantidad)", value: $cantidad, in: 1...Int(max(producto.stock, 1)))
                         .foregroundStyle(Color.fcFg)
-                    LabeledContent("Total") {
+                    LabeledContent {
                         Text((producto.precio * Double(cantidad)).enSoles)
                             .bold()
                             .foregroundStyle(Color.fcBrand)
+                    } label: {
+                        Text("Total").foregroundStyle(Color.fcFg2)
                     }
+                } header: {
+                    Text("Venta").foregroundStyle(Color.fcFg2)
                 }
                 .listRowBackground(Color.fcBgInput)
                 .listRowSeparatorTint(Color.fcSeparator)

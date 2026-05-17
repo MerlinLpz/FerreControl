@@ -6,6 +6,7 @@ struct ProductoListView: View {
 
     @ObservedObject var viewModel: ProductoViewModel
     @State private var mostrarFormulario = false
+    @State private var listaID = UUID()
 
     var body: some View {
         NavigationStack {
@@ -28,7 +29,7 @@ struct ProductoListView: View {
             .background(Color.fcBgApp)
             .toolbarBackground(Color.fcBgApp, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .sheet(isPresented: $mostrarFormulario) {
+            .sheet(isPresented: $mostrarFormulario, onDismiss: { listaID = UUID() }) {
                 ProductoFormView(viewModel: viewModel)
             }
             .alert("Error", isPresented: Binding(
@@ -77,6 +78,7 @@ struct ProductoListView: View {
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
         }
+        .id(listaID)
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
     }

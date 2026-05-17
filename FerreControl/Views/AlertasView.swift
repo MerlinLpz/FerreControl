@@ -6,18 +6,20 @@ struct AlertasView: View {
     @ObservedObject var viewModel: ProductoViewModel
 
     var body: some View {
-        Group {
-            if viewModel.productosStockBajo.isEmpty {
-                inventarioEnOrden
-            } else {
-                listaAlertas
+        NavigationStack {
+            Group {
+                if viewModel.productosStockBajo.isEmpty {
+                    inventarioEnOrden
+                } else {
+                    listaAlertas
+                }
             }
+            .navigationTitle("Alertas")
+            .navigationBarTitleDisplayMode(.large)
+            .background(Color.fcBgApp)
+            .toolbarBackground(Color.fcBgApp, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
-        .navigationTitle("Alertas")
-        .navigationBarTitleDisplayMode(.large)
-        .background(Color.fcBgApp)
-        .toolbarBackground(Color.fcBgApp, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     // MARK: - Estado vacío
