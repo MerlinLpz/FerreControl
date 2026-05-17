@@ -23,6 +23,7 @@ struct ProductoListView: View {
                     .padding(.bottom, FCSpace.s5)
             }
             .navigationTitle("Inventario")
+            .navigationBarTitleDisplayMode(.large)
             .searchable(text: $viewModel.busqueda, prompt: "Buscar producto...")
             .background(Color.fcBgApp)
             .toolbarBackground(Color.fcBgApp, for: .navigationBar)

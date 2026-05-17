@@ -38,7 +38,7 @@ struct AlertasView: View {
                     .foregroundStyle(Color.fcFg)
                 Text("Todos los productos tienen\nstock suficiente.")
                     .font(.subheadline)
-                    .foregroundStyle(Color.fcFg3)
+                    .foregroundStyle(Color.fcFg2)
                     .multilineTextAlignment(.center)
             }
         }
@@ -84,7 +84,7 @@ struct AlertasView: View {
                 Section {
                     ForEach(bajos) { p in filaAlerta(p, nivel: .bajo) }
                 } header: {
-                    etiquetaSeccion("Stock bajo", icono: "arrow.down.circle.fill", color: .fcFg3)
+                    etiquetaSeccion("Stock bajo", icono: "arrow.down.circle.fill", color: .fcFg2)
                 }
                 .listRowBackground(Color.fcBgCard)
                 .listRowSeparatorTint(Color.fcSeparator)
@@ -107,7 +107,7 @@ struct AlertasView: View {
                     .foregroundStyle(Color.fcBrandSoftFg)
                 Text("Revisa y repón el inventario")
                     .font(.caption)
-                    .foregroundStyle(Color.fcFg3)
+                    .foregroundStyle(Color.fcFg2)
             }
         }
         .padding(.vertical, FCSpace.s1)
@@ -147,7 +147,7 @@ private struct FilaProductoAlerta: View {
                         .foregroundStyle(Color.fcFg)
                     Text(producto.unidad ?? "Unidad")
                         .font(.caption)
-                        .foregroundStyle(Color.fcFg3)
+                        .foregroundStyle(Color.fcFg2)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: FCSpace.s1) {
@@ -156,7 +156,7 @@ private struct FilaProductoAlerta: View {
                         .foregroundStyle(nivel.color)
                     Text("mín. \(producto.stockMinimo)")
                         .font(.caption2)
-                        .foregroundStyle(Color.fcFg3)
+                        .foregroundStyle(Color.fcFg2)
                 }
                 .padding(.horizontal, FCSpace.s2)
                 .padding(.vertical, FCSpace.s1)

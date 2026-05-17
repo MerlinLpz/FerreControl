@@ -50,15 +50,18 @@ struct ProductoFormView: View {
     // MARK: - Secciones
 
     private var seccionIdentificacion: some View {
-        Section("Identificación") {
+        Section {
             campo("Nombre", placeholder: "Ej: Tornillo, Tubería", texto: $nombre)
             campo("Medida", placeholder: "Ej: 1/2 pulgada, 3/4\"", texto: $medida)
-            Picker("Unidad de venta", selection: $unidadSeleccionada) {
+            Picker(selection: $unidadSeleccionada) {
                 ForEach(UnidadMedida.allCases, id: \.rawValue) { u in
                     Text(u.rawValue).tag(u.rawValue)
                 }
+            } label: {
+                Text("Unidad de venta").foregroundStyle(Color.fcFg2)
             }
-            .foregroundStyle(Color.fcFg)
+        } header: {
+            Text("Identificación").foregroundStyle(Color.fcFg2)
         }
         .listRowBackground(Color.fcBgInput)
         .listRowSeparatorTint(Color.fcSeparator)
@@ -76,15 +79,17 @@ struct ProductoFormView: View {
                     .foregroundStyle(Color.fcFg3)
             }
         } header: {
-            Text("Inventario")
+            Text("Inventario").foregroundStyle(Color.fcFg2)
         }
         .listRowBackground(Color.fcBgInput)
         .listRowSeparatorTint(Color.fcSeparator)
     }
 
     private var seccionPrecio: some View {
-        Section("Precio") {
+        Section {
             campoDecimal("Precio (S/)", placeholder: "0.00", texto: $precioTexto)
+        } header: {
+            Text("Precio").foregroundStyle(Color.fcFg2)
         }
         .listRowBackground(Color.fcBgInput)
         .listRowSeparatorTint(Color.fcSeparator)
@@ -109,28 +114,34 @@ struct ProductoFormView: View {
     // MARK: - Campos reutilizables
 
     private func campo(_ label: String, placeholder: String, texto: Binding<String>) -> some View {
-        LabeledContent(label) {
+        LabeledContent {
             TextField(placeholder, text: texto)
                 .multilineTextAlignment(.trailing)
                 .foregroundStyle(Color.fcFg)
+        } label: {
+            Text(label).foregroundStyle(Color.fcFg2)
         }
     }
 
     private func campoNumero(_ label: String, placeholder: String, texto: Binding<String>) -> some View {
-        LabeledContent(label) {
+        LabeledContent {
             TextField(placeholder, text: texto)
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .foregroundStyle(Color.fcFg)
+        } label: {
+            Text(label).foregroundStyle(Color.fcFg2)
         }
     }
 
     private func campoDecimal(_ label: String, placeholder: String, texto: Binding<String>) -> some View {
-        LabeledContent(label) {
+        LabeledContent {
             TextField(placeholder, text: texto)
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
                 .foregroundStyle(Color.fcFg)
+        } label: {
+            Text(label).foregroundStyle(Color.fcFg2)
         }
     }
 
