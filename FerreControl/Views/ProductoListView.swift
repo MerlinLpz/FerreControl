@@ -10,21 +10,21 @@ struct ProductoListView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
-                Group {
-                    if viewModel.productosFiltrados.isEmpty {
-                        contenidoVacio
-                    } else {
-                        listaProductos
-                    }
+            Group {
+                if viewModel.productosFiltrados.isEmpty {
+                    contenidoVacio
+                } else {
+                    listaProductos
                 }
-
+            }
+            .safeAreaInset(edge: .bottom, alignment: .trailing) {
                 fabAgregarProducto
                     .padding(.trailing, FCSpace.s5)
                     .padding(.bottom, FCSpace.s5)
             }
             .navigationTitle("Inventario")
             .navigationBarTitleDisplayMode(.large)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .searchable(text: $viewModel.busqueda, prompt: "Buscar producto...")
             .background(Color.fcBgApp)
             .toolbarBackground(Color.fcBgApp, for: .navigationBar)
@@ -71,12 +71,6 @@ struct ProductoListView: View {
             .onDelete { offsets in
                 viewModel.eliminarProductos(en: offsets, de: viewModel.productosFiltrados)
             }
-
-            // Espacio para que el FAB no tape el último elemento
-            Color.clear
-                .frame(height: 80)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
         }
         .id(listaID)
         .listStyle(.insetGrouped)
