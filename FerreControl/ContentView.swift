@@ -13,10 +13,6 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
-            Tab("Resumen", systemImage: "chart.bar.fill") {
-                DashboardView(viewModel: viewModel)
-            }
-
             Tab("Inventario", systemImage: "list.bullet") {
                 ProductoListView(viewModel: viewModel)
             }
@@ -27,6 +23,10 @@ struct ContentView: View {
                 }
             }
             .badge(viewModel.productosStockBajo.count)
+
+            Tab("Resumen", systemImage: "chart.bar.fill") {
+                DashboardView(viewModel: viewModel)
+            }
         }
     }
 }

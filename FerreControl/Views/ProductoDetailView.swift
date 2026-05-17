@@ -1,5 +1,6 @@
 // Vista de detalle: información del producto e historial de ventas
 import SwiftUI
+import Charts
 
 struct ProductoDetailView: View {
 
@@ -13,6 +14,7 @@ struct ProductoDetailView: View {
         List {
             seccionInfo
             seccionVentas
+            seccionGrafico
         }
         .listStyle(.insetGrouped)
         .navigationTitle(producto.nombreCompleto)
@@ -77,6 +79,72 @@ struct ProductoDetailView: View {
             }
         }
     }
+
+    // MARK: - Gráfico de ventas por día
+
+    /// Agrupa las ventas del producto por día calendario y suma las cantidades
+    private var ventasPorDia: [DatoVenta] {
+        let calendario = Calendar.current
+        let agrupadas = Dictionary(grouping: producto.ventasArray) { venta in
+            calendario.startOfDay(for: venta.fecha ?? Date())
+        }
+        return agrupadas
+            .map { DatoVenta(dia: $0.key, total: $0.value.reduce(Int32(0)) { $0 + $1.cantidad }) }
+            .sorted { $0.dia < $1.dia }
+    }
+
+    private var seccionGrafico: some View {
+        Section("Ventas por día") {
+            if ventasPorDia.isEmpty {
+                VStack(spacing: 14) {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.system(size: 44))
+                        .foregroundStyle(.purple.opacity(0.35))
+                    Text("Sin datos para graficar")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    Text("Registra la primera venta y el gráfico\naparecerá aquí automáticamente.")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 28)
+            } else {
+                Chart(ventasPorDia) { dato in
+                    BarMark(
+                        x: .value("Día", dato.dia, unit: .day),
+                        y: .value(producto.unidad ?? "Unidades", dato.total)
+                    )
+                    .foregroundStyle(Color.purple.gradient)
+                    .cornerRadius(6)
+                    .annotation(position: .top, alignment: .center) {
+                        Text("\(dato.total)")
+                            .font(.caption2.bold())
+                            .foregroundStyle(.purple)
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks(values: .automatic) {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
+                            .foregroundStyle(Color(.systemGray4))
+                        AxisValueLabel(format: .dateTime.month(.abbreviated).day(),
+                                       centered: true)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading) {
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4]))
+                            .foregroundStyle(Color(.systemGray4))
+                        AxisValueLabel()
+                    }
+                }
+                .chartYScale(domain: 0...(ventasPorDia.map(\.total).max().map { Int($0) + 2 } ?? 10))
+                .frame(height: 200)
+                .padding(.vertical, 12)
+            }
+        }
+    }
 }
 
 // MARK: - Fila de detalle genérica
@@ -98,6 +166,14 @@ private struct FilaDetalle: View {
             Image(systemName: icono)
         }
     }
+}
+
+// MARK: - Dato del gráfico: ventas agrupadas por día
+
+private struct DatoVenta: Identifiable {
+    let id = UUID()
+    let dia: Date
+    let total: Int32
 }
 
 // MARK: - Fila de venta en el historial
