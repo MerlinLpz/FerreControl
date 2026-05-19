@@ -80,6 +80,7 @@ struct ProductoFormView: View {
             }
         } header: {
             Text("Inventario").foregroundStyle(Color.fcFg2)
+                
         }
         .listRowBackground(Color.fcBgInput)
         .listRowSeparatorTint(Color.fcSeparator)

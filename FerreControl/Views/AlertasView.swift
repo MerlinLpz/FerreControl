@@ -16,6 +16,7 @@ struct AlertasView: View {
             }
             .navigationTitle("Alertas")
             .navigationBarTitleDisplayMode(.large)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .background(Color.fcBgApp)
             .toolbarBackground(Color.fcBgApp, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
