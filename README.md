@@ -15,7 +15,7 @@ An iOS inventory management app for hardware stores, built with SwiftUI, CoreDat
 | <img src="FerreControl/Resources/screenshots/formulario.png" width="200"> | <img src="FerreControl/Resources/screenshots/busqueda.png" width="200"> |
 
 | Categorías |
-|------------|-------|
+|------------|
 | <img src="FerreControl/Resources/screenshots/categorias.png" width="200"> |
 
 ---
